@@ -10,6 +10,7 @@ use slog::{info, o, Drain};
 use std::path::PathBuf;
 use structopt::StructOpt;
 
+mod build_info;
 mod config;
 
 #[structopt(
@@ -17,6 +18,7 @@ mod config;
     author = "O.S. Systems Software LTDA. <contact@ossystems.com.br>",
     about = "A SendGrid AMQP Bridge."
 )]
+#[structopt(raw(version = "build_info::version()"))]
 #[derive(StructOpt, Debug)]
 struct Cli {
     /// Configuration file to use
@@ -33,7 +35,7 @@ fn main() -> Result<(), ExitFailure> {
     let cli = Cli::from_args();
     let logger = init_logger(cli.verbose);
 
-    info!(logger, "starting...");
+    info!(logger, "starting"; "version" => build_info::version());
     let config = Config::load(&cli.config, &logger)?;
 
     Ok(())
