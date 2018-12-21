@@ -12,6 +12,7 @@ use structopt::StructOpt;
 
 mod build_info;
 mod config;
+mod sendgrid;
 
 #[structopt(
     name = "sendgrid-amqp-bridge",

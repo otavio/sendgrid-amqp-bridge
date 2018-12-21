@@ -2,28 +2,15 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use failure::{format_err, ResultExt};
+use crate::sendgrid::SendGrid;
+use failure::ResultExt;
 use serde_derive::Deserialize;
-use slog::{debug, error, trace};
-use std::{collections::BTreeMap, fs::File, io::Read, path::Path};
+use slog::{debug, trace};
+use std::{fs::File, io::Read, path::Path};
 
 #[derive(Deserialize)]
 pub struct Config {
     sendgrid: SendGrid,
-}
-
-#[derive(Deserialize)]
-struct SendGrid {
-    api_key: String,
-    sender: String,
-    #[serde(with = "serde_with::rust::maps_duplicate_key_is_error")]
-    email_templates: BTreeMap<String, EmailTemplate>,
-}
-
-#[derive(Deserialize)]
-struct EmailTemplate {
-    template_id: String,
-    required_fields: Option<Vec<String>>,
 }
 
 impl Config {
@@ -42,37 +29,21 @@ impl Config {
             logger,
             "loaded configuration file";
             "templates" => format!("{:?}",
-            config.sendgrid.email_templates.keys())
+            config.sendgrid.email_templates())
         );
 
-        config.sendgrid.email_templates.iter().for_each(|(k, v)| {
+        for template in &config.sendgrid.email_templates() {
             trace!(
                 logger,
                 "template: {}, required_fields: {:?}",
-                k,
-                v.required_fields.clone().unwrap_or_else(|| vec![])
-            );
-        });
-
-        Ok(config)
-    }
-
-    /// Returns the required fields for a respective e-mail template.
-    pub fn required_fields_for_email(
-        &self,
-        template: &str,
-        logger: &slog::Logger,
-    ) -> Result<Vec<String>, failure::Error> {
-        // Ensures the email template exists
-        if !self.sendgrid.email_templates.contains_key(template) {
-            error!(logger, "invalid template"; "template" => template);
-            return Err(format_err!("Unknown template: {}", template));
+                template,
+                config
+                    .sendgrid
+                    .required_fields_for_email(template, logger)
+                    .unwrap()
+            )
         }
 
-        // Collect all required fields
-        Ok(self.sendgrid.email_templates[template]
-            .required_fields
-            .clone()
-            .unwrap_or_else(|| vec![]))
+        Ok(config)
     }
 }
