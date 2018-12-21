@@ -7,7 +7,12 @@ edition = "2018"
 
 [dependencies]
 exitfailure = "0.5"
-slog = "2"
+failure = "0.1"
+serde = "1"
+serde_derive = "1"
+serde_with = "0.2"
+serde_yaml = "0.8"
+slog = { version = "2", features = ["max_level_trace", "release_max_level_debug"] }
 slog-async = "2"
 slog-term = "2"
 structopt = "0.2"

@@ -2,10 +2,15 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
 use exitfailure::ExitFailure;
 use slog::{info, o, Drain};
 use std::path::PathBuf;
 use structopt::StructOpt;
+
+mod config;
 
 #[structopt(
     name = "sendgrid-amqp-bridge",
@@ -23,10 +28,13 @@ struct Cli {
 }
 
 fn main() -> Result<(), ExitFailure> {
+    use crate::config::Config;
+
     let cli = Cli::from_args();
     let logger = init_logger(cli.verbose);
 
     info!(logger, "starting...");
+    let config = Config::load(&cli.config, &logger)?;
 
     Ok(())
 }
@@ -34,8 +42,8 @@ fn main() -> Result<(), ExitFailure> {
 fn init_logger(verbosity: usize) -> slog::Logger {
     let drain = slog_term::term_compact()
         .filter_level(match verbosity {
-            1 => slog::Level::Info,
-            2 => slog::Level::Debug,
+            0 => slog::Level::Info,
+            1 => slog::Level::Debug,
             _ => slog::Level::Trace,
         })
         .fuse();
