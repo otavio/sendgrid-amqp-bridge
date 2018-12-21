@@ -7,4 +7,7 @@ edition = "2018"
 
 [dependencies]
 exitfailure = "0.5"
+slog = "2"
+slog-async = "2"
+slog-term = "2"
 structopt = "0.2"
