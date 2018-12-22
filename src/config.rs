@@ -2,21 +2,22 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::sendgrid::SendGrid;
+use crate::{amqp::AMQP, sendgrid::SendGrid};
 use failure::ResultExt;
 use serde::Deserialize;
 use slog::{debug, trace};
 use std::{fs::File, io::Read, path::Path};
 
 #[derive(Deserialize)]
-pub struct Config {
+pub(crate) struct Config {
+    amqp: AMQP,
     sendgrid: SendGrid,
 }
 
 impl Config {
     /// Load configuration from filesystem. The file is expected to be
     /// YAML compatible.
-    pub fn load(path: &Path, logger: &slog::Logger) -> Result<Self, failure::Error> {
+    pub(crate) fn load(path: &Path, logger: &slog::Logger) -> Result<Self, failure::Error> {
         let mut buf = String::new();
         File::open(path)
             .context(format!("opening configuration file {:?}", &path))?

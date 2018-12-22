@@ -10,6 +10,7 @@ use slog::{info, o, Drain};
 use std::path::PathBuf;
 use structopt::StructOpt;
 
+mod amqp;
 mod build_info;
 mod config;
 mod sendgrid;
