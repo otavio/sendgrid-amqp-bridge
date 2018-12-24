@@ -4,7 +4,7 @@
 
 use crate::sendgrid::SendGrid;
 use failure::ResultExt;
-use serde_derive::Deserialize;
+use serde::Deserialize;
 use slog::{debug, trace};
 use std::{fs::File, io::Read, path::Path};
 

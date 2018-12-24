@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use failure::format_err;
-use serde_derive::Deserialize;
+use serde::Deserialize;
 use slog::error;
 use std::collections::BTreeMap;
 
