@@ -34,12 +34,26 @@ struct Cli {
 
 fn main() -> Result<(), ExitFailure> {
     use crate::config::Config;
+    use tokio::runtime::Runtime;
 
     let cli = Cli::from_args();
     let logger = init_logger(cli.verbose);
 
     info!(logger, "starting"; "version" => build_info::version());
     let config = Config::load(&cli.config, &logger)?;
+
+    Runtime::new()?.block_on_all(config.amqp.into_future(
+        |message, logger| {
+            slog::trace!(
+                logger,
+                "got '{}'",
+                std::str::from_utf8(&message.data).unwrap()
+            );
+
+            true
+        },
+        logger,
+    ))?;
 
     Ok(())
 }
