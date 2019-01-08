@@ -2,7 +2,7 @@
 name = "sendgrid-amqp-bridge"
 version = "0.1.0"
 authors = ["Otavio Salvador <otavio@ossystems.com.br>"]
-license = "Apache-2.0"
+license = "MIT"
 edition = "2018"
 
 [dependencies]

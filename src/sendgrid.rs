@@ -1,6 +1,6 @@
 // Copyright (C) 2018 O.S. Systems Sofware LTDA
 //
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: MIT
 
 use failure::format_err;
 use serde::Deserialize;

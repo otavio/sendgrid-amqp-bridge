@@ -1,6 +1,6 @@
 // Copyright (C) 2018 O.S. Systems Sofware LTDA
 //
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: MIT
 
 /// Returns the version in use, including the commit and if there is
 /// uncommited modification in the source.
