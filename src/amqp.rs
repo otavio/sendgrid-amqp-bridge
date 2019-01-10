@@ -4,7 +4,7 @@
 
 use failure::err_msg;
 use futures::{
-    future::{Either, Future, IntoFuture},
+    future::{self, Either, Future, IntoFuture},
     stream::Stream,
 };
 use lapin::{
@@ -151,16 +151,22 @@ where
                 )
                 .map(move |stream| (channel, stream, logger))
         })
+        .map_err(move |err| error!(err_logger, "got error in consumer: {:?}", err))
         .and_then(move |(channel, stream, logger)| {
-            stream.for_each(move |message| {
-                tokio::spawn(future::lazy(|_| {
-                    if message_handler(&message, &logger) {
-                        Either::A(channel.basic_ack(message.delivery_tag, false))
-                    } else {
-                        Either::B(channel.basic_nack(message.delivery_tag, false, true))
-                    }
-                    .map_err(move |err| error!(err_logger, "got error in consumer: {}", err))
-                }))
-            })
+            stream
+                .for_each(move |message| {
+                    tokio::spawn(future::lazy(|| {
+                        if message_handler(&message, &logger) {
+                            Either::A(channel.basic_ack(message.delivery_tag, false))
+                        } else {
+                            Either::B(channel.basic_nack(message.delivery_tag, false, true))
+                        }
+                        .map_err(move |err| error!(err_logger, "got error in consumer: {}", err))
+                    }));
+
+                    Ok(())
+                })
+                .map_err(move |err| error!(err_logger, "got error in consumer: {:?}", err))
         })
+        .map_err(move |err| error!(err_logger, "got error in consumer: {:?}", err))
 }
