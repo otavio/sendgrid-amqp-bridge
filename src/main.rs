@@ -13,6 +13,7 @@ use structopt::StructOpt;
 mod amqp;
 mod build_info;
 mod config;
+mod payload;
 mod sendgrid;
 
 #[structopt(
