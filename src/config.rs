@@ -10,8 +10,8 @@ use std::{fs::File, io::Read, path::Path};
 
 #[derive(Deserialize)]
 pub(crate) struct Config {
-    amqp: AMQP,
-    sendgrid: SendGrid,
+    pub(crate) amqp: AMQP,
+    pub(crate) sendgrid: SendGrid,
 }
 
 impl Config {
