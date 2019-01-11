@@ -2,25 +2,16 @@
 //
 // SPDX-License-Identifier: MIT
 
-use serde::Deserialize;
-use std::net::SocketAddr;
+use crate::config;
 
-#[derive(Deserialize)]
 pub(crate) struct AMQP {
-    addr: SocketAddr,
-    username: String,
-    password: String,
-    #[serde(default = "empty_vhost")]
-    vhost: String,
-    queue_name: String,
-    #[serde(default = "empty_consumer_name")]
-    consumer_name: String,
+    config: config::AMQP,
 }
 
-fn empty_vhost() -> String {
-    "/".to_string()
-}
-
-fn empty_consumer_name() -> String {
-    "sendgrid-amqp-bridge".to_string()
+impl AMQP {
+    pub(crate) fn from_config(config: &config::Config) -> Self {
+        Self {
+            config: config.amqp.clone(),
+        }
+    }
 }
