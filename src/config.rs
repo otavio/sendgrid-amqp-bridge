@@ -37,8 +37,9 @@ fn empty_consumer_name() -> String {
 
 #[derive(Deserialize, Clone)]
 pub(crate) struct SendGrid {
-    api_key: String,
-    sender: String,
+    pub(crate) api_key: String,
+    pub(crate) sender_name: String,
+    pub(crate) sender_email: String,
     #[serde(with = "serde_with::rust::maps_duplicate_key_is_error")]
     email_templates: BTreeMap<String, EmailTemplate>,
 }

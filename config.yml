@@ -8,7 +8,8 @@ amqp:
 
 sendgrid:
   api_key: API Key
-  sender: sender@email.com
+  sender_name: Sender name
+  sender_email: sender@email.com
   email_templates:
     template_name1:
       template_id: d-9b...
