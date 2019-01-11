@@ -4,7 +4,7 @@
 
 use failure::{format_err, ResultExt};
 use serde::Deserialize;
-use slog::{debug, error};
+use slog::debug;
 use std::{collections::BTreeMap, fs::File, io::Read, net::SocketAddr, path::Path};
 
 #[derive(Deserialize)]
@@ -57,11 +57,9 @@ impl SendGrid {
     pub(crate) fn required_fields_for_email(
         &self,
         template: &str,
-        logger: &slog::Logger,
     ) -> Result<Vec<String>, failure::Error> {
         // Ensures the email template exists
         if !self.email_templates.contains_key(template) {
-            error!(logger, "invalid template"; "template" => template);
             return Err(format_err!("Unknown template: {}", template));
         }
 
