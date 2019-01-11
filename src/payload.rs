@@ -6,13 +6,13 @@ use serde::Deserialize;
 use std::collections::HashMap;
 
 #[derive(Deserialize, Debug, PartialEq)]
-struct Message {
+pub struct Message {
     #[serde(rename = "type")]
-    kind: String,
-    destination_email: String,
-    destination_name: String,
+    pub kind: String,
+    pub destination_email: String,
+    pub destination_name: String,
     #[serde(default)]
-    fields: HashMap<String, String>,
+    pub fields: HashMap<String, String>,
 }
 
 #[test]
