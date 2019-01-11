@@ -72,6 +72,15 @@ impl SendGrid {
             .clone()
             .unwrap_or_else(|| vec![]))
     }
+
+    pub(crate) fn template_id(&self, template: &str) -> Result<String, failure::Error> {
+        // Ensures the email template exists
+        if !self.email_templates.contains_key(template) {
+            return Err(format_err!("Unknown template: {}", template));
+        }
+
+        Ok(self.email_templates[template].template_id.clone())
+    }
 }
 
 impl Config {
