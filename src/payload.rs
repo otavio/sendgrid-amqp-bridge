@@ -13,6 +13,13 @@ pub struct Message {
     pub destination_name: String,
     #[serde(default)]
     pub fields: HashMap<String, String>,
+    pub attachment: Option<Attachment>,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct Attachment {
+    pub name: String,
+    pub content: String,
 }
 
 #[test]
@@ -28,6 +35,7 @@ fn valid_message() {
                 .iter()
                 .cloned()
                 .collect(),
+            attachment: None,
         },
         serde_json::from_str(
             &json!(
@@ -51,6 +59,7 @@ fn valid_message() {
             destination_email: "robertosilva@gmail.com".to_string(),
             destination_name: "Roberto Silva".to_string(),
             fields: HashMap::new(),
+            attachment: None,
         },
         serde_json::from_str(
             &json!(
