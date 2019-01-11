@@ -5,10 +5,12 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+use crate::{amqp::AMQP, config::Config, sendgrid::SendGrid};
 use exitfailure::ExitFailure;
 use slog::{info, o, Drain};
 use std::path::PathBuf;
 use structopt::StructOpt;
+use tokio::runtime::Runtime;
 
 mod amqp;
 mod build_info;
@@ -33,13 +35,15 @@ struct Cli {
 }
 
 fn main() -> Result<(), ExitFailure> {
-    use crate::config::Config;
-
     let cli = Cli::from_args();
     let logger = init_logger(cli.verbose);
 
     info!(logger, "starting"; "version" => build_info::version());
     let config = Config::load(&cli.config, &logger)?;
+    let amqp = AMQP::from_config(&config);
+    let sendgrid = SendGrid::from_config(&config);
+
+    Runtime::new()?.block_on_all(amqp.create_consumers(sendgrid, logger))?;
 
     Ok(())
 }
