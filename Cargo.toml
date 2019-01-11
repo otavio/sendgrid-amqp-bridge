@@ -10,6 +10,7 @@ exitfailure = "0.5"
 failure = "0.1"
 futures = "0.1"
 lapin = { version = "0.15", package = "lapin-futures" }
+sendgrid_api = { package = "sendgrid", git = "https://github.com/otavio/sendgrid-rs", branch = "topic/template_id" }
 serde = { version = "1", features = ["std", "derive"] }
 serde_json = "1"
 serde_with = "0.2"
