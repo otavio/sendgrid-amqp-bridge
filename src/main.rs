@@ -6,6 +6,7 @@
 #![allow(unused_variables)]
 
 use exitfailure::ExitFailure;
+use lapin::message::Delivery;
 use slog::{info, o, Drain};
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -42,20 +43,24 @@ fn main() -> Result<(), ExitFailure> {
     info!(logger, "starting"; "version" => build_info::version());
     let config = Config::load(&cli.config, &logger)?;
 
-    Runtime::new()?.block_on_all(config.amqp.into_future(
-        |message, logger| {
-            slog::trace!(
-                logger,
-                "got '{}'",
-                std::str::from_utf8(&message.data).unwrap()
-            );
-
-            true
-        },
-        logger,
-    ))?;
+    Runtime::new()?.block_on_all(config.amqp.into_future(SimpleHandler, logger))?;
 
     Ok(())
+}
+
+#[derive(Clone)]
+struct SimpleHandler;
+
+impl amqp::Handler for SimpleHandler {
+    fn handle(self, message: &Delivery, logger: &slog::Logger) -> bool {
+        slog::trace!(
+            logger,
+            "got '{}'",
+            std::str::from_utf8(&message.data).unwrap()
+        );
+
+        true
+    }
 }
 
 fn init_logger(verbosity: usize) -> slog::Logger {

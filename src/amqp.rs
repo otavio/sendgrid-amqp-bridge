@@ -48,7 +48,7 @@ impl AMQP {
         logger: slog::Logger,
     ) -> impl Future<Item = Client<TcpStream>, Error = failure::Error> + Send + 'static
     where
-        F: Fn(&Delivery, &slog::Logger) -> bool + Send + Sync + 'static,
+        F: Handler + Clone + Send + Sync + 'static,
     {
         let logger = logger.clone();
         let connect_logger = logger.clone();
@@ -117,9 +117,13 @@ fn create_consumer<T, F>(
 ) -> impl Future<Item = (), Error = ()> + Send + 'static
 where
     T: AsyncRead + AsyncWrite + Send + Sync + 'static,
-    F: Fn(&Delivery, &slog::Logger) -> bool + Send + Sync + 'static,
+    F: Handler + Clone + Send + Sync + 'static,
 {
     let err_logger = logger.clone();
+    let err_logger1 = logger.clone();
+    let err_logger2 = logger.clone();
+    let err_logger3 = logger.clone();
+    let err_logger4 = logger.clone();
 
     client
         .create_confirm_channel(ConfirmSelectOptions::default())
@@ -151,22 +155,30 @@ where
                 )
                 .map(move |stream| (channel, stream, logger))
         })
-        .map_err(move |err| error!(err_logger, "got error in consumer: {:?}", err))
+        .map_err(move |err| error!(err_logger4, "got error in consumer: {:?}", err))
         .and_then(move |(channel, stream, logger)| {
             stream
                 .for_each(move |message| {
-                    tokio::spawn(future::lazy(|| {
-                        if message_handler(&message, &logger) {
+                    let logger = logger.clone();
+                    let err_logger1 = err_logger.clone();
+                    let message_handler = message_handler.clone();
+                    let channel = channel.clone();
+                    tokio::spawn(future::lazy(move || {
+                        if message_handler.handle(&message, &logger) {
                             Either::A(channel.basic_ack(message.delivery_tag, false))
                         } else {
                             Either::B(channel.basic_nack(message.delivery_tag, false, true))
                         }
-                        .map_err(move |err| error!(err_logger, "got error in consumer: {}", err))
+                        .map_err(move |err| error!(err_logger1, "got error in consumer: {}", err))
                     }));
 
                     Ok(())
                 })
-                .map_err(move |err| error!(err_logger, "got error in consumer: {:?}", err))
+                .map_err(move |err| error!(err_logger2, "got error in consumer: {:?}", err))
         })
-        .map_err(move |err| error!(err_logger, "got error in consumer: {:?}", err))
+        .map_err(move |err| error!(err_logger3, "got error in consumer: {:?}", err))
+}
+
+pub trait Handler {
+    fn handle(self, message: &Delivery, logger: &slog::Logger) -> bool;
 }
