@@ -126,6 +126,7 @@ where
     T: AsyncRead + AsyncWrite + Send + Sync + 'static,
 {
     let err_logger = logger.clone();
+    let exchange_bind = exchange_name.clone();
 
     client
         .create_confirm_channel(ConfirmSelectOptions::default())
@@ -147,7 +148,7 @@ where
         .and_then(move |(channel, queue, logger)| {
             channel
                 .exchange_declare(
-                    &queue.name(),
+                    &exchange_name,
                     "direct",
                     ExchangeDeclareOptions {
                         durable: true,
@@ -161,7 +162,7 @@ where
             channel
                 .queue_bind(
                     &queue.name(),
-                    &exchange_name,
+                    &exchange_bind,
                     &routing_key,
                     QueueBindOptions::default(),
                     FieldTable::new(),
