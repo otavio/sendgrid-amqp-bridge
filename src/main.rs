@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use crate::{amqp::AMQP, config::Config, sendgrid::SendGrid};
 use exitfailure::ExitFailure;
 use slog::{info, o, Drain};

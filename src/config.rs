@@ -51,11 +51,6 @@ struct EmailTemplate {
 }
 
 impl SendGrid {
-    /// Return the known e-mail templates.
-    pub(crate) fn email_templates(&self) -> Vec<String> {
-        self.email_templates.keys().cloned().collect()
-    }
-
     /// Returns the required fields for a respective e-mail template.
     pub(crate) fn required_fields_for_email(
         &self,
