@@ -59,6 +59,7 @@ impl AMQP {
             exchange_name,
             routing_key,
             consumer_name,
+            workers,
         } = self.config;
 
         TcpStream::connect(&addr)
@@ -92,7 +93,7 @@ impl AMQP {
             .and_then(move |client| {
                 let customer_client = client.clone();
 
-                futures::stream::iter_ok(0..5)
+                futures::stream::iter_ok(0..workers)
                     .for_each(move |_| {
                         tokio::spawn(create_consumer(
                             &customer_client,

@@ -25,6 +25,8 @@ pub(crate) struct AMQP {
     pub(crate) queue_name: String,
     #[serde(default = "empty_consumer_name")]
     pub(crate) consumer_name: String,
+    #[serde(default = "num_cpus::get")]
+    pub(crate) workers: usize,
 }
 
 fn empty_vhost() -> String {
