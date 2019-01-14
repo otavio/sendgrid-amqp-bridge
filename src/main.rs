@@ -4,7 +4,7 @@
 
 use crate::{amqp::AMQP, config::Config, sendgrid::SendGrid};
 use exitfailure::ExitFailure;
-use slog::{info, o, Drain};
+use slog::info;
 use std::path::PathBuf;
 use structopt::StructOpt;
 use tokio::runtime::Runtime;
@@ -12,6 +12,7 @@ use tokio::runtime::Runtime;
 mod amqp;
 mod build_info;
 mod config;
+mod log;
 mod payload;
 mod sendgrid;
 
@@ -29,11 +30,14 @@ struct Cli {
     /// Increase the verboseness level
     #[structopt(short = "v", long = "verbose", parse(from_occurrences))]
     verbose: usize,
+    /// Log output to use ('human' or 'json')
+    #[structopt(short = "l", long = "log", default_value = "human")]
+    log: log::Output,
 }
 
 fn main() -> Result<(), ExitFailure> {
     let cli = Cli::from_args();
-    let logger = init_logger(cli.verbose);
+    let logger = log::init(cli.verbose, cli.log);
 
     info!(logger, "starting"; "version" => build_info::version());
     let config = Config::load(&cli.config, &logger)?;
@@ -43,17 +47,4 @@ fn main() -> Result<(), ExitFailure> {
     Runtime::new()?.block_on_all(amqp.create_consumers(sendgrid, logger))?;
 
     Ok(())
-}
-
-fn init_logger(verbosity: usize) -> slog::Logger {
-    let drain = slog_term::term_compact()
-        .filter_level(match verbosity {
-            0 => slog::Level::Info,
-            1 => slog::Level::Debug,
-            _ => slog::Level::Trace,
-        })
-        .fuse();
-    let drain = slog_async::Async::new(drain).build().fuse();
-
-    slog::Logger::root(drain, o!())
 }
