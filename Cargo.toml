@@ -14,7 +14,7 @@ num_cpus = "1.9"
 sendgrid_api = { version = "0.7", package = "sendgrid" }
 serde = { version = "1", features = ["std", "derive"] }
 serde_json = "1"
-serde_with = "0.2"
+serde_with = "1.0"
 serde_yaml = "0.8"
 slog = { version = "2", features = ["max_level_trace", "release_max_level_debug"] }
 slog-async = "2"
