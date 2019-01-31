@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/otavio/sendgrid-amqp-bridge.svg?branch=master)](https://travis-ci.org/otavio/sendgrid-amqp-bridge)
+[![Build Status](https://travis-ci.org/OSSystems/sendgrid-amqp-bridge.svg?branch=master)](https://travis-ci.org/OSSystems/sendgrid-amqp-bridge.svg)
 
 # sendgrid-amqp-bridge
 
