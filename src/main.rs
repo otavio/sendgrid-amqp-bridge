@@ -25,7 +25,7 @@ mod sendgrid;
 #[derive(StructOpt, Debug)]
 struct Cli {
     /// Configuration file to use
-    #[structopt(short = "c", long = "config", parse(from_os_str))]
+    #[structopt(short = "c", long = "config")]
     config: PathBuf,
     /// Increase the verboseness level
     #[structopt(short = "v", long = "verbose", parse(from_occurrences))]
