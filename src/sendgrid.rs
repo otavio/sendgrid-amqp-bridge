@@ -49,33 +49,33 @@ impl amqp::MessageHandler for SendGrid {
 fn send_email(config: &config::SendGrid, payload: &payload::Message, logger: &slog::Logger) {
     use sendgrid_api::v3::*;
 
-    let mut req = SGMailV3::new();
-    req.set_template_id(&config.template_id(&payload.kind).unwrap());
-
-    let mut from = Email::new();
-    from.set_email(&config.sender_email);
-    from.set_name(&config.sender_name);
-    req.set_from(from);
-
-    let mut personalization = Personalization::new();
-
-    let mut to = Email::new();
-    to.set_email(&payload.destination_email);
-    to.set_name(&payload.destination_name);
-    personalization.add_to(to);
-
-    personalization.add_dynamic_template_data(payload.fields.clone());
-    req.add_personalization(personalization);
+    let mut message = Message::new()
+        .set_template_id(&config.template_id(&payload.kind).unwrap())
+        .set_from(
+            Email::new()
+                .set_email(&config.sender_email)
+                .set_name(&config.sender_name),
+        )
+        .add_personalization(
+            Personalization::new()
+                .add_to(
+                    Email::new()
+                        .set_email(&payload.destination_email)
+                        .set_name(&payload.destination_name),
+                )
+                .add_dynamic_template_data(payload.fields.clone()),
+        );
 
     if let Some(attachment) = &payload.attachment {
-        let mut a = Attachment::new();
-        a.set_base64_content(&attachment.content);
-        a.set_filename(&attachment.name);
-        req.add_attachment(a);
+        message = message.add_attachment(
+            Attachment::new()
+                .set_base64_content(&attachment.content)
+                .set_filename(&attachment.name),
+        );
     }
 
-    let sender = V3Sender::new(config.api_key.clone());
-    match sender.send(&req) {
+    let sender = Sender::new(config.api_key.clone());
+    match sender.send(&message) {
         Ok(ref res) if res.status().is_success() => info!(
             logger, "email delivered";
             "type" => &payload.kind,
