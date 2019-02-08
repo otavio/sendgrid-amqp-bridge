@@ -18,6 +18,7 @@ use lapin::{
     types::FieldTable,
 };
 use slog::{error, o, trace};
+use std::net::ToSocketAddrs;
 use tokio::{
     io::{AsyncRead, AsyncWrite},
     net::TcpStream,
@@ -62,54 +63,58 @@ impl AMQP {
             workers,
         } = self.config;
 
-        TcpStream::connect(&addr)
-            .map_err(|e| err_msg(format!("Couldn't connect to {}", e)))
-            .and_then(move |stream| {
-                trace!(
-                    connect_logger, "connecting to AMQP server";
-                    "addr" => addr,
-                    "vhost" => &vhost,
-                );
+        TcpStream::connect(
+            &addr
+                .to_socket_addrs()
+                .unwrap_or_else(|e| panic!("Couldn't connect to {}", e))
+                .next()
+                .unwrap(),
+        )
+        .map_err(|e| err_msg(format!("Couldn't connect to {}", e)))
+        .and_then(move |stream| {
+            trace!(
+                connect_logger, "connecting to AMQP server";
+                "addr" => addr,
+                "vhost" => &vhost,
+            );
 
-                Client::connect(
-                    stream,
-                    ConnectionOptions {
-                        username,
-                        password,
-                        vhost,
-                        heartbeat: 20,
-                        ..Default::default()
-                    },
-                )
-                .map_err(failure::Error::from)
-            })
-            .and_then(|(client, heartbeat)| {
-                tokio::spawn(
-                    heartbeat.map_err(move |e| error!(err_logger, "heartbeat error: {}", e)),
-                );
-
-                Ok(client)
-            })
-            .and_then(move |client| {
-                let customer_client = client.clone();
-
-                futures::stream::iter_ok(0..workers)
-                    .for_each(move |_| {
-                        tokio::spawn(create_consumer(
-                            &customer_client,
-                            queue_name.clone(),
-                            exchange_name.clone(),
-                            routing_key.clone(),
-                            consumer_name.clone(),
-                            message_handler.clone(),
-                            logger.clone(),
-                        ))
-                    })
-                    .into_future()
-                    .map(move |_| client)
-                    .map_err(|_| err_msg("Couldn't spawn the consumer task"))
-            })
+            Client::connect(
+                stream,
+                ConnectionOptions {
+                    username,
+                    password,
+                    vhost,
+                    heartbeat: 20,
+                    ..Default::default()
+                },
+            )
             .map_err(failure::Error::from)
+        })
+        .and_then(|(client, heartbeat)| {
+            tokio::spawn(heartbeat.map_err(move |e| error!(err_logger, "heartbeat error: {}", e)));
+
+            Ok(client)
+        })
+        .and_then(move |client| {
+            let customer_client = client.clone();
+
+            futures::stream::iter_ok(0..workers)
+                .for_each(move |_| {
+                    tokio::spawn(create_consumer(
+                        &customer_client,
+                        queue_name.clone(),
+                        exchange_name.clone(),
+                        routing_key.clone(),
+                        consumer_name.clone(),
+                        message_handler.clone(),
+                        logger.clone(),
+                    ))
+                })
+                .into_future()
+                .map(move |_| client)
+                .map_err(|_| err_msg("Couldn't spawn the consumer task"))
+        })
+        .map_err(failure::Error::from)
     }
 }
 

@@ -5,7 +5,7 @@
 use failure::{format_err, ResultExt};
 use serde::Deserialize;
 use slog::debug;
-use std::{collections::BTreeMap, fs::File, io::Read, net::SocketAddr, path::Path};
+use std::{collections::BTreeMap, fs::File, io::Read, path::Path};
 
 #[derive(Deserialize)]
 pub(crate) struct Config {
@@ -15,7 +15,7 @@ pub(crate) struct Config {
 
 #[derive(Deserialize, Clone)]
 pub(crate) struct AMQP {
-    pub(crate) addr: SocketAddr,
+    pub(crate) addr: String,
     pub(crate) username: String,
     pub(crate) password: String,
     #[serde(default = "empty_vhost")]
