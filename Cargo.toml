@@ -1,6 +1,6 @@
 [package]
 name = "sendgrid-amqp-bridge"
-version = "19.2.1"
+version = "19.2.2"
 authors = ["Otavio Salvador <otavio@ossystems.com.br>"]
 license = "MIT"
 edition = "2018"
