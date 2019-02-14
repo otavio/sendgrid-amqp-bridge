@@ -12,7 +12,7 @@ RUN cargo install --path .
 FROM debian:stretch-slim
 
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends libssl1.1 \
+        && apt-get install -y --no-install-recommends libssl1.1 ca-certificates \
         && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /usr/src/misc/entrypoint.sh /usr/local/bin/
