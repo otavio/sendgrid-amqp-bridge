@@ -1264,7 +1264,7 @@ dependencies = [
 
 [[package]]
 name = "sendgrid-amqp-bridge"
-version = "19.2.4"
+version = "19.3.0"
 dependencies = [
  "exitfailure 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
