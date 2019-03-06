@@ -1,4 +1,4 @@
-FROM rust:1.32.0-slim as builder
+FROM rust:1.33.0-slim as builder
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends git-core libssl-dev pkg-config \
