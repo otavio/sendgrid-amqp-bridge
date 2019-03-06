@@ -7,6 +7,6 @@
 ///
 /// Internally, it use `git describe` to get the version and the
 /// number of changes since the last tag.
-pub fn version() -> &'static str {
+pub const fn version() -> &'static str {
     env!("VERSION")
 }
