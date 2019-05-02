@@ -24,4 +24,4 @@ structopt = "0.2"
 tokio = "0.1"
 
 [build-dependencies]
-git-version = "0.2"
+git-version = "0.3"
