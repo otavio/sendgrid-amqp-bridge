@@ -488,7 +488,7 @@ dependencies = [
 
 [[package]]
 name = "git-version"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "git-version-macro 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1388,7 +1388,7 @@ dependencies = [
  "exitfailure 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.28 (registry+https://github.com/rust-lang/crates.io-index)",
- "git-version 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "git-version 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "lapin-futures 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "num_cpus 1.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sendgrid 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2078,7 +2078,7 @@ dependencies = [
 "checksum futures-cpupool 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)" = "ab90cde24b3319636588d0c35fe03b1333857621051837ed769faefb4c2162e4"
 "checksum generic-array 0.12.3 (registry+https://github.com/rust-lang/crates.io-index)" = "c68f0274ae0e023facc3c97b2e00f076be70e254bc851d972503b328db79b2ec"
 "checksum getrandom 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)" = "34f33de6f0ae7c9cb5e574502a562e2b512799e32abb801cd1e79ad952b62b49"
-"checksum git-version 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "302f04aa4c65b38b7db9b80ebfe81f2d4727b0518cb8db97a8c10ad3c700b248"
+"checksum git-version 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "2e78f32621b47a4fbf58b56807a689ca49c1ab19a1abd2e1b417c02d704c1e74"
 "checksum git-version-macro 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "7d3da7c317307fc64fd46622563d50d0cddf47053f92894f7a8584a277f621e5"
 "checksum h2 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)" = "a5b34c246847f938a410a03c5458c7fee2274436675e76d8b903c08efc29c462"
 "checksum handlebars 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d82e5750d8027a97b9640e3fefa66bbaf852a35228e1c90790efd13c4b09c166"
