@@ -1,4 +1,4 @@
-// Copyright (C) 2018 O.S. Systems Sofware LTDA
+// Copyright (C) 2018, 2019 O.S. Systems Sofware LTDA
 //
 // SPDX-License-Identifier: MIT
 
@@ -17,11 +17,12 @@ mod payload;
 mod sendgrid;
 
 #[structopt(
+    no_version,
     name = "sendgrid-amqp-bridge",
     author = "O.S. Systems Software LTDA. <contact@ossystems.com.br>",
-    about = "A SendGrid AMQP Bridge."
+    about = "A SendGrid AMQP Bridge.",
+    version = build_info::version()
 )]
-#[structopt(raw(version = "build_info::version()"))]
 #[derive(StructOpt, Debug)]
 struct Cli {
     /// Configuration file to use
