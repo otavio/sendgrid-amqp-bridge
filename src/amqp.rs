@@ -147,7 +147,7 @@ where
                         durable: true,
                         ..Default::default()
                     },
-                    FieldTable::new(),
+                    FieldTable::default(),
                 )
                 .map(move |queue| (channel, queue, logger))
         })
@@ -160,7 +160,7 @@ where
                         durable: true,
                         ..Default::default()
                     },
-                    FieldTable::new(),
+                    FieldTable::default(),
                 )
                 .map(move |_| (channel, queue, logger))
         })
@@ -171,7 +171,7 @@ where
                     &exchange_bind,
                     &routing_key,
                     QueueBindOptions::default(),
-                    FieldTable::new(),
+                    FieldTable::default(),
                 )
                 .map(move |_| (channel, queue, logger))
         })
@@ -184,7 +184,7 @@ where
                     &queue,
                     &consumer_name,
                     BasicConsumeOptions::default(),
-                    FieldTable::new(),
+                    FieldTable::default(),
                 )
                 .map(move |stream| (channel, stream, logger))
         })
