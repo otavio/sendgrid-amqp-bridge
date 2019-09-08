@@ -9,20 +9,15 @@ use futures::{
     stream::Stream,
 };
 use lapin::{
-    channel::{
+    message::Delivery,
+    options::{
         BasicConsumeOptions, ConfirmSelectOptions, ExchangeDeclareOptions, QueueBindOptions,
         QueueDeclareOptions,
     },
-    client::{Client, ConnectionOptions},
-    message::Delivery,
     types::FieldTable,
+    Client, ConnectionProperties,
 };
 use slog::{error, o, trace};
-use std::net::ToSocketAddrs;
-use tokio::{
-    io::{AsyncRead, AsyncWrite},
-    net::TcpStream,
-};
 
 pub trait MessageHandler: Clone + Send + Sync {
     fn handle(self, message: &Delivery, logger: &slog::Logger) -> bool;
@@ -43,19 +38,15 @@ impl AMQP {
         self,
         message_handler: F,
         logger: slog::Logger,
-    ) -> impl Future<Item = Client<TcpStream>, Error = failure::Error> + Send + 'static
+    ) -> impl Future<Item = Client, Error = failure::Error> + Send + 'static
     where
         F: MessageHandler + 'static,
     {
         let logger = logger.clone();
         let connect_logger = logger.clone();
-        let err_logger = logger.clone();
 
         let config::AMQP {
-            addr,
-            username,
-            password,
-            vhost,
+            dsn,
             queue_name,
             exchange_name,
             routing_key,
@@ -63,63 +54,38 @@ impl AMQP {
             workers,
         } = self.config;
 
-        TcpStream::connect(
-            &addr
-                .to_socket_addrs()
-                .unwrap_or_else(|e| panic!("Couldn't connect to {}", e))
-                .next()
-                .unwrap(),
-        )
-        .map_err(|e| err_msg(format!("Couldn't connect to {}", e)))
-        .and_then(move |stream| {
-            trace!(
-                connect_logger, "connecting to AMQP server";
-                "addr" => addr,
-                "vhost" => &vhost,
-            );
+        trace!(
+            connect_logger, "connecting to AMQP server";
+            "dsn" => &dsn,
+        );
 
-            Client::connect(
-                stream,
-                ConnectionOptions {
-                    username,
-                    password,
-                    vhost,
-                    heartbeat: 20,
-                    ..Default::default()
-                },
-            )
+        Client::connect(&dsn, ConnectionProperties::default())
             .map_err(failure::Error::from)
-        })
-        .and_then(|(client, heartbeat)| {
-            tokio::spawn(heartbeat.map_err(move |e| error!(err_logger, "heartbeat error: {}", e)));
+            .and_then(move |client| {
+                let customer_client = client.clone();
 
-            Ok(client)
-        })
-        .and_then(move |client| {
-            let customer_client = client.clone();
-
-            futures::stream::iter_ok(0..workers)
-                .for_each(move |_| {
-                    tokio::spawn(create_consumer(
-                        &customer_client,
-                        queue_name.clone(),
-                        exchange_name.clone(),
-                        routing_key.clone(),
-                        consumer_name.clone(),
-                        message_handler.clone(),
-                        logger.clone(),
-                    ))
-                })
-                .into_future()
-                .map(move |_| client)
-                .map_err(|_| err_msg("Couldn't spawn the consumer task"))
-        })
-        .map_err(failure::Error::from)
+                futures::stream::iter_ok(0..workers)
+                    .for_each(move |_| {
+                        tokio::spawn(create_consumer(
+                            &customer_client,
+                            queue_name.clone(),
+                            exchange_name.clone(),
+                            routing_key.clone(),
+                            consumer_name.clone(),
+                            message_handler.clone(),
+                            logger.clone(),
+                        ))
+                    })
+                    .into_future()
+                    .map(move |_| client)
+                    .map_err(|_| err_msg("Couldn't spawn the consumer task"))
+            })
+            .map_err(failure::Error::from)
     }
 }
 
-fn create_consumer<T, F>(
-    client: &Client<T>,
+fn create_consumer<F>(
+    client: &Client,
     queue_name: String,
     exchange_name: String,
     consumer_name: String,
@@ -129,15 +95,16 @@ fn create_consumer<T, F>(
 ) -> impl Future<Item = (), Error = ()> + Send + 'static
 where
     F: MessageHandler + 'static,
-    T: AsyncRead + AsyncWrite + Send + Sync + 'static,
 {
     let err_logger = logger.clone();
     let exchange_bind = exchange_name.clone();
 
     client
-        .create_confirm_channel(ConfirmSelectOptions::default())
+        .create_channel()
         .and_then(move |channel| {
-            let logger = logger.new(o!("channel" => channel.id));
+            let logger = logger.new(o!("channel" => channel.id()));
+
+            channel.confirm_select(ConfirmSelectOptions::default());
 
             trace!(logger, "creating queue {}", &queue_name);
             channel
@@ -167,7 +134,7 @@ where
         .and_then(move |(channel, queue, logger)| {
             channel
                 .queue_bind(
-                    &queue.name(),
+                    &queue.name().as_str(),
                     &exchange_bind,
                     &routing_key,
                     QueueBindOptions::default(),
@@ -176,7 +143,7 @@ where
                 .map(move |_| (channel, queue, logger))
         })
         .and_then(move |(channel, queue, logger)| {
-            let logger = logger.new(o!("queue" => queue.name()));
+            let logger = logger.new(o!("queue" => queue.name().as_str().to_owned()));
 
             trace!(logger, "creating consumer");
             channel

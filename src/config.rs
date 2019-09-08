@@ -15,11 +15,7 @@ pub(crate) struct Config {
 
 #[derive(Deserialize, Clone)]
 pub(crate) struct AMQP {
-    pub(crate) addr: String,
-    pub(crate) username: String,
-    pub(crate) password: String,
-    #[serde(default = "empty_vhost")]
-    pub(crate) vhost: String,
+    pub(crate) dsn: String,
     pub(crate) exchange_name: String,
     pub(crate) routing_key: String,
     pub(crate) queue_name: String,
@@ -27,10 +23,6 @@ pub(crate) struct AMQP {
     pub(crate) consumer_name: String,
     #[serde(default = "num_cpus::get")]
     pub(crate) workers: usize,
-}
-
-fn empty_vhost() -> String {
-    "/".to_string()
 }
 
 fn empty_consumer_name() -> String {

@@ -10,7 +10,7 @@ exitfailure = "0.5"
 failure = "0.1"
 futures = "0.1"
 git-version = "0.3"
-lapin = { version = "0.15", package = "lapin-futures" }
+lapin = { version = "0.26", default-features = false, package = "lapin-futures" }
 num_cpus = "1.10"
 sendgrid_api = { version = "0.8", package = "sendgrid" }
 serde = { version = "1", features = ["std", "derive"] }
