@@ -1,4 +1,4 @@
-FROM rust:1.33.0-slim as builder
+FROM rust:1.37.0-slim-buster as builder
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends git-core libssl-dev pkg-config \
@@ -9,7 +9,7 @@ COPY . .
 
 RUN cargo install --path .
 
-FROM debian:stretch-slim
+FROM debian:buster-slim
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends libssl1.1 ca-certificates \
