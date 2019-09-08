@@ -1,7 +1,5 @@
 amqp:
-  addr: 127.0.0.1:5672
-  username: guest
-  password: guest
+  dsn: amqp://guest:guest@127.0.0.1:5672
   exchange_name: email
   routing_key: email_key
   queue_name: send_email
