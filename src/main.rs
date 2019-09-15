@@ -7,7 +7,6 @@ use exitfailure::ExitFailure;
 use slog::info;
 use std::path::PathBuf;
 use structopt::StructOpt;
-use tokio::runtime::Runtime;
 
 mod amqp;
 mod build_info;
@@ -36,7 +35,8 @@ struct Cli {
     log: log::Output,
 }
 
-fn main() -> Result<(), ExitFailure> {
+#[tokio::main]
+async fn main() -> Result<(), ExitFailure> {
     let cli = Cli::from_args();
     let logger = log::init(cli.verbose, cli.log);
 
@@ -45,7 +45,7 @@ fn main() -> Result<(), ExitFailure> {
     let amqp = AMQP::from_config(&config);
     let sendgrid = SendGrid::from_config(&config);
 
-    Runtime::new()?.block_on_all(amqp.create_consumers(sendgrid, logger))?;
+    amqp.create_consumers(sendgrid, logger).await?;
 
     Ok(())
 }
