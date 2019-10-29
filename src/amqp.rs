@@ -15,7 +15,7 @@ use lapin::{
         QueueDeclareOptions,
     },
     types::FieldTable,
-    Client, ConnectionProperties,
+    Client, ConnectionProperties, ExchangeKind,
 };
 use slog::{error, o, trace};
 
@@ -122,7 +122,7 @@ where
             channel
                 .exchange_declare(
                     &exchange_name,
-                    "direct",
+                    ExchangeKind::Direct,
                     ExchangeDeclareOptions {
                         durable: true,
                         ..Default::default()
