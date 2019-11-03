@@ -19,7 +19,7 @@ use lapin::{
 };
 use slog::{error, o, trace};
 
-pub trait MessageHandler: Clone + Send + Sync {
+pub trait MessageHandler: Clone + Send {
     fn handle(self, message: &Delivery, logger: &slog::Logger) -> bool;
 }
 
