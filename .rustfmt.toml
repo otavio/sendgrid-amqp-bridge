@@ -1,3 +1,4 @@
+edition = "2018"
 reorder_imports = true
 condense_wildcard_suffixes = true
 merge_imports = true
