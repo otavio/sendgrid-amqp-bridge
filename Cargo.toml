@@ -9,7 +9,7 @@ edition = "2018"
 exitfailure = "0.5"
 failure = "0.1"
 git-version = "0.3"
-lapin = { version = "0.28", default-features = false, features = ["futures"] }
+lapin = { version = "0.32", default-features = false, features = ["futures"] }
 num_cpus = "1"
 sendgrid_api = { version = "0.9", package = "sendgrid" }
 serde = { version = "1", features = ["std", "derive"] }
