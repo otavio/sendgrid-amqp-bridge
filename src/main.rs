@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{amqp::AMQP, config::Config, sendgrid::SendGrid};
-use exitfailure::ExitFailure;
 use slog::info;
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -36,7 +35,7 @@ struct Cli {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), ExitFailure> {
+async fn main() -> Result<(), failure::Error> {
     let cli = Cli::from_args();
     let logger = log::init(cli.verbose, cli.log);
 

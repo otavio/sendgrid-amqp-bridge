@@ -76,20 +76,23 @@ fn send_email(config: &config::SendGrid, payload: &payload::Message, logger: &sl
 
     let sender = Sender::new(config.api_key.clone());
     match sender.send(&message) {
-        Ok(ref res) if res.status().is_success() => info!(
+        Ok(res) if res.status().is_success() => info!(
             logger, "email delivered";
             "type" => &payload.kind,
             "destination_name" => &payload.destination_name,
             "destination_email" => &payload.destination_email,
             "status" => res.status().as_str()
         ),
-        Ok(ref mut res) => error!(
-            logger, "fail to send email: {}", res.text().unwrap();
-            "type" => &payload.kind,
-            "destination_name" => &payload.destination_name,
-            "destination_email" => &payload.destination_email,
-            "status" => res.status().as_str(),
-        ),
+        Ok(res) => {
+            let status = res.status();
+            error!(
+                logger, "fail to send email: {}", res.text().unwrap();
+                "type" => &payload.kind,
+                "destination_name" => &payload.destination_name,
+                "destination_email" => &payload.destination_email,
+                "status" => status.as_str(),
+            )
+        }
         Err(e) => error!(logger, "fail to send email: {}", e),
     };
 }

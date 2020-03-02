@@ -151,7 +151,7 @@ where
     trace!(logger, "creating consumer");
     let stream = channel
         .basic_consume(
-            &queue,
+            &queue.name().as_str(),
             &consumer_name,
             BasicConsumeOptions::default(),
             FieldTable::default(),
