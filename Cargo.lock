@@ -17,9 +17,9 @@ checksum = "ee2a4ec343196209d6594e19543ae87a39f96d5534d7174822a3ad825dd6ed7e"
 
 [[package]]
 name = "amq-protocol"
-version = "4.2.2"
+version = "5.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "591036b5c667eb00b2d0def928f5967ba0471814edaa6eb555d947255c2d8dfe"
+checksum = "d896bf7bcb337452cb5b4c6e2fc32d804a4e3c088456233a6107f8ba81a0b75b"
 dependencies = [
  "amq-protocol-codegen",
  "amq-protocol-tcp",
@@ -31,9 +31,9 @@ dependencies = [
 
 [[package]]
 name = "amq-protocol-codegen"
-version = "4.2.2"
+version = "5.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "700a1bcc975c3c67574fd05bb2fea3a9d38a4c319c3fc982ac8661dfa0febd6b"
+checksum = "574b355c842fd7c9338896552e85eb297d16ae3552921d17f7b746204ba4f3e0"
 dependencies = [
  "amq-protocol-types",
  "handlebars",
@@ -43,21 +43,21 @@ dependencies = [
 
 [[package]]
 name = "amq-protocol-tcp"
-version = "4.2.2"
+version = "5.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c44aca5636c30f7876b9fa0a31d0cd52733d946db15b168d2a89418dab85baa9"
+checksum = "9daafd369c8f224b0c90ffc0d8c2c1bbb811e9e9e1b050a702dfef6d9e5add5f"
 dependencies = [
  "amq-protocol-uri",
  "log",
- "mio",
+ "mio 0.7.7",
  "tcp-stream",
 ]
 
 [[package]]
 name = "amq-protocol-types"
-version = "4.2.2"
+version = "5.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a45836fdf1b70ecd5dd7fb2241c53229f47ff8f945afd7d61cef15bfaf72317"
+checksum = "e09bf15149a94d87348c6c8cc7c68de4353542a294eb69e9cb4884325cba888b"
 dependencies = [
  "cookie-factory",
  "nom",
@@ -67,9 +67,9 @@ dependencies = [
 
 [[package]]
 name = "amq-protocol-uri"
-version = "4.2.2"
+version = "5.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76f4de681a0be026f6df2fd440d9dd9c94bb15d2afa6f8dbfd5fa454371965f0"
+checksum = "be7bc8477f77dacaaf8ba07d7d168c36bf17f298d4670b4f91ce86d35f1e919a"
 dependencies = [
  "percent-encoding",
  "url",
@@ -760,16 +760,16 @@ dependencies = [
 
 [[package]]
 name = "lapin"
-version = "0.32.5"
+version = "0.33.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20d86569fcef3663fb41671d1882ea7156f1b6903ea4dd2da5b2ac98b3c7e60a"
+checksum = "b317fdae5fe34078df763e951f4ae3241a9b53a44dadf5b8d8870a018e4d19a9"
 dependencies = [
  "amq-protocol",
  "amq-protocol-codegen",
  "crossbeam-channel",
  "futures-core",
  "log",
- "mio",
+ "mio 0.7.7",
  "parking_lot",
  "pinky-swear",
  "serde_json",
@@ -887,10 +887,23 @@ dependencies = [
  "kernel32-sys",
  "libc",
  "log",
- "miow",
+ "miow 0.2.2",
  "net2",
  "slab",
  "winapi 0.2.8",
+]
+
+[[package]]
+name = "mio"
+version = "0.7.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e50ae3f04d169fcc9bde0b547d1c205219b7157e07ded9c5aff03e0637cb3ed7"
+dependencies = [
+ "libc",
+ "log",
+ "miow 0.3.6",
+ "ntapi",
+ "winapi 0.3.9",
 ]
 
 [[package]]
@@ -903,6 +916,16 @@ dependencies = [
  "net2",
  "winapi 0.2.8",
  "ws2_32-sys",
+]
+
+[[package]]
+name = "miow"
+version = "0.3.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a33c1b55807fbed163481b5ba66db4b2fa6cde694a5027be10fb724206c5897"
+dependencies = [
+ "socket2",
+ "winapi 0.3.9",
 ]
 
 [[package]]
@@ -943,6 +966,15 @@ dependencies = [
  "lexical-core",
  "memchr",
  "version_check",
+]
+
+[[package]]
+name = "ntapi"
+version = "0.3.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f6bb902e437b6d86e03cce10a7e2af662292c5dfef23b65899ea3ac9354ad44"
+dependencies = [
+ "winapi 0.3.9",
 ]
 
 [[package]]
@@ -1659,12 +1691,12 @@ checksum = "f764005d11ee5f36500a149ace24e00e3da98b0158b3e2d53a7495660d3f4d60"
 
 [[package]]
 name = "tcp-stream"
-version = "0.9.1"
+version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cde4c09dccd2f92acfd27cafd2f4fb46e073959e8044928073f22a96fe51c75d"
+checksum = "ae73d8436406c3db72ee8c71afb734b8e9b35deb58ccda9fb9c76fc9111d0b90"
 dependencies = [
  "cfg-if 0.1.10",
- "mio",
+ "mio 0.7.7",
  "native-tls",
 ]
 
@@ -1748,7 +1780,7 @@ dependencies = [
  "iovec",
  "lazy_static",
  "memchr",
- "mio",
+ "mio 0.6.23",
  "num_cpus",
  "pin-project-lite 0.1.11",
  "slab",
