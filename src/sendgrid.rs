@@ -49,21 +49,13 @@ impl amqp::MessageHandler for SendGrid {
 fn send_email(config: &config::SendGrid, payload: &payload::Message, logger: &slog::Logger) {
     use sendgrid_api::v3::*;
 
-    let mut message = Message::new()
+    let mut message = Message::new(Email::new(&config.sender_email).set_name(&config.sender_name))
         .set_template_id(&config.template_id(&payload.kind).unwrap())
-        .set_from(
-            Email::new()
-                .set_email(&config.sender_email)
-                .set_name(&config.sender_name),
-        )
         .add_personalization(
-            Personalization::new()
-                .add_to(
-                    Email::new()
-                        .set_email(&payload.destination_email)
-                        .set_name(&payload.destination_name),
-                )
-                .add_dynamic_template_data(payload.fields.clone()),
+            Personalization::new(
+                Email::new(&payload.destination_email).set_name(&payload.destination_name),
+            )
+            .add_dynamic_template_data(payload.fields.clone()),
         );
 
     if let Some(attachment) = &payload.attachment {
