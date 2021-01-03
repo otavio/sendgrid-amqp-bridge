@@ -10,7 +10,7 @@ use lapin::{
         ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions,
     },
     types::FieldTable,
-    Connection, ConnectionProperties, ExchangeKind,
+    Channel, Connection, ConnectionProperties, ExchangeKind,
 };
 use slog::{error, o, trace};
 
@@ -54,7 +54,7 @@ impl AMQP {
         let conn = Connection::connect(&dsn, ConnectionProperties::default()).await?;
         for client_id in 0..workers {
             tokio::spawn(consumer(
-                conn.clone(),
+                conn.create_channel().await?,
                 queue_name.clone(),
                 exchange_name.clone(),
                 routing_key.clone(),
@@ -69,7 +69,7 @@ impl AMQP {
 }
 
 async fn consumer<F>(
-    client: Connection,
+    channel: Channel,
     queue_name: String,
     exchange_name: String,
     consumer_name: String,
@@ -80,7 +80,7 @@ async fn consumer<F>(
     F: MessageHandler + 'static,
 {
     if let Err(err) = create_consumer(
-        client,
+        channel,
         queue_name,
         exchange_name,
         routing_key,
@@ -95,7 +95,7 @@ async fn consumer<F>(
 }
 
 async fn create_consumer<F>(
-    client: Connection,
+    channel: Channel,
     queue_name: String,
     exchange_name: String,
     consumer_name: String,
@@ -106,8 +106,6 @@ async fn create_consumer<F>(
 where
     F: MessageHandler + 'static,
 {
-    let channel = client.create_channel().await?;
-
     channel
         .confirm_select(ConfirmSelectOptions::default())
         .await?;
@@ -159,7 +157,7 @@ where
         .await?;
 
     for message in stream.into_iter() {
-        let message = message.expect("error caught in in consumer");
+        let (channel, message) = message.expect("error caught in in consumer");
         if message_handler.clone().handle(&message, &logger) {
             channel
                 .basic_ack(message.delivery_tag, BasicAckOptions { multiple: false })

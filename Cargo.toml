@@ -8,7 +8,7 @@ edition = "2018"
 [dependencies]
 failure = "0.1"
 git-version = "0.3"
-lapin = { version = "0.33", features = ["futures"] }
+lapin = "1"
 num_cpus = "1"
 sendgrid_api = { version = "0.15", package = "sendgrid" }
 serde = { version = "1", features = ["std", "derive"] }
@@ -20,4 +20,4 @@ slog-async = "2"
 slog-json = "2"
 slog-term = "2"
 structopt = "0.3"
-tokio = { version = "0.2", features = ["macros"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
