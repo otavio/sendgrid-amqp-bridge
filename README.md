@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/OSSystems/sendgrid-amqp-bridge.svg?branch=master)](https://travis-ci.org/OSSystems/sendgrid-amqp-bridge.svg)
+![Build status](https://github.com/OSSystems/sendgrid-amqp-bridge/workflows/CI%20(Linux)/badge.svg?branch=master)
 
 # sendgrid-amqp-bridge
 
