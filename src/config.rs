@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-use failure::{format_err, ResultExt};
+use anyhow::{format_err, Context};
 use serde::Deserialize;
 use slog::debug;
 use std::{collections::BTreeMap, fs::File, io::Read, path::Path};
@@ -49,7 +49,7 @@ impl SendGrid {
     pub(crate) fn required_fields_for_email(
         &self,
         template: &str,
-    ) -> Result<Vec<String>, failure::Error> {
+    ) -> Result<Vec<String>, anyhow::Error> {
         // Ensures the email template exists
         if !self.email_templates.contains_key(template) {
             return Err(format_err!("Unknown template: {}", template));
@@ -62,7 +62,7 @@ impl SendGrid {
             .unwrap_or_else(|| vec![]))
     }
 
-    pub(crate) fn template_id(&self, template: &str) -> Result<String, failure::Error> {
+    pub(crate) fn template_id(&self, template: &str) -> Result<String, anyhow::Error> {
         // Ensures the email template exists
         if !self.email_templates.contains_key(template) {
             return Err(format_err!("Unknown template: {}", template));
@@ -75,7 +75,7 @@ impl SendGrid {
 impl Config {
     /// Load configuration from filesystem. The file is expected to be
     /// YAML compatible.
-    pub(crate) fn load(path: &Path, logger: &slog::Logger) -> Result<Self, failure::Error> {
+    pub(crate) fn load(path: &Path, logger: &slog::Logger) -> Result<Self, anyhow::Error> {
         debug!(logger, "Loading configuration file {:?}", &path);
 
         let mut buf = String::new();

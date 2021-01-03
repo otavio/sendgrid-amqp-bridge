@@ -12,16 +12,16 @@ pub(crate) enum Output {
 }
 
 impl FromStr for Output {
-    type Err = failure::Error;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "human" => Ok(Output::Human),
             "json" => Ok(Output::Json),
-            v => Err(failure::err_msg(format!(
+            v => Err(anyhow::format_err!(
                 "{} is invalid. Supported values are 'human' and 'json'.",
-                v
-            ))),
+                v,
+            )),
         }
     }
 }

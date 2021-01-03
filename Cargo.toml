@@ -6,7 +6,7 @@ license = "MIT"
 edition = "2018"
 
 [dependencies]
-failure = "0.1"
+anyhow = "1"
 git-version = "0.3"
 lapin = "1"
 num_cpus = "1"

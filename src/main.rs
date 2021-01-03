@@ -35,7 +35,7 @@ struct Cli {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), failure::Error> {
+async fn main() -> Result<(), anyhow::Error> {
     let cli = Cli::from_args();
     let logger = log::init(cli.verbose, cli.log);
 
