@@ -9,7 +9,6 @@ edition = "2018"
 anyhow = "1"
 git-version = "0.3"
 lapin = "1"
-num_cpus = "1"
 sendgrid_api = { version = "0.15", package = "sendgrid" }
 serde = { version = "1", features = ["std", "derive"] }
 serde_json = "1"

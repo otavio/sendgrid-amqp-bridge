@@ -43,7 +43,6 @@ impl AMQP {
             exchange_name,
             routing_key,
             consumer_name,
-            workers,
         } = self.config;
 
         trace!(
@@ -52,45 +51,24 @@ impl AMQP {
         );
 
         let conn = Connection::connect(&dsn, ConnectionProperties::default()).await?;
-        for client_id in 0..workers {
-            tokio::spawn(consumer(
-                conn.create_channel().await?,
-                queue_name.clone(),
-                exchange_name.clone(),
-                routing_key.clone(),
-                consumer_name.clone(),
-                message_handler.clone(),
-                logger.new(o!("client" => client_id)),
-            ));
-        }
+        let channel = conn.create_channel().await?;
+        tokio::spawn(async move {
+            if let Err(err) = create_consumer(
+                channel,
+                queue_name,
+                exchange_name,
+                routing_key,
+                consumer_name,
+                message_handler,
+                logger.clone(),
+            )
+            .await
+            {
+                error!(logger, "got error in consumer: {}", err);
+            }
+        });
 
         Ok(conn)
-    }
-}
-
-async fn consumer<F>(
-    channel: Channel,
-    queue_name: String,
-    exchange_name: String,
-    consumer_name: String,
-    routing_key: String,
-    message_handler: F,
-    logger: slog::Logger,
-) where
-    F: MessageHandler + 'static,
-{
-    if let Err(err) = create_consumer(
-        channel,
-        queue_name,
-        exchange_name,
-        routing_key,
-        consumer_name,
-        message_handler,
-        logger.clone(),
-    )
-    .await
-    {
-        error!(logger, "got error in consumer: {}", err);
     }
 }
 

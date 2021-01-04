@@ -1314,7 +1314,6 @@ dependencies = [
  "anyhow",
  "git-version",
  "lapin",
- "num_cpus",
  "sendgrid",
  "serde",
  "serde_json",
